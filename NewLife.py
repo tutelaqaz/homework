@@ -9,7 +9,7 @@ urls = [] # найденные ссылки
 urlsdone = [] # обкаченные ссылки
 x = 1 # links counter
 dirsmade = [] # созданные директории
-downloaded = 0 #счетчик статей
+
 url = 'http://www.inmozhaisk.ru'
 table = 'path;author;sex;birthday;header;created;sphere;genre_fi;type;topic;chronotop;style;audience_age;audience_level;audience_size;source;publication;publisher;publ_year;medium;country;region;language;\n'
 con = urllib.request.urlopen(url)
@@ -78,8 +78,7 @@ for link in links:
                         os.system(command)
                         os.system(command2)
                         os.remove(path +'/new' + y + '.txt')
-                        downloaded += 1
-                        print(downloaded)
+                        
         
 print('The end')
 
