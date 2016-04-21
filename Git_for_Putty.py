@@ -1,5 +1,5 @@
 import os
 
-lst = os.listdir("home/guest")
+lst = os.listdir("/")
 
 print(lst)
