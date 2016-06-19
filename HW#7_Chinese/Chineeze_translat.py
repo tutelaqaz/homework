@@ -6,63 +6,93 @@ Created on Tue Jun 14 22:16:22 2016
 """
 
 import re
+import lxml.html
 
-def finding(letters):
-    letters4 = letters
-    if letters in dic_translat:
-        WRITING
-        if len(letters3) != 0:
-            letters3.reverse()
-            finding(letters3)
-    else:
-        if len(letters) != 0:
-            letters3 += letters.pop()
-            finding(letters)
+def dictionary_maker():
+    dic_translat = {}
+    dic_transcrib = {}
+    f = open('cedict_ts_mini.u8', 'r', encoding = 'utf-8')
+    for line in f:
+        m = re.search('\s(\S*)\s\[[^\n]', line)
+        m2 = re.search('\[(.*)\][^/]', line)
+        m3 = re.search('(/.*/)[^\n]', line)
+        if m != None:
+            word = m.group(1)
+            if m2 != None:
+                transcrib = m2.group(1)
+                dic_transcrib[word] = transcrib
+            if m3 != None:
+                translat = m3.group(1)
+                a = re.findall('/?(.+?)/', translat)
+                if len(a) > 1:
+                    dic_translat[word] = a
+                else:
+                    dic_translat[word] = translat
+                    
+                
         else:
-            WRITING Letters4
-            letters = []
-dic_translat = {}
-dic_transcr = {}
-mass = {'ignor_cancel' : '>', 'Done' : '<'}
-punct = ['!', '\"', ';', ':', '?', '(',')', '-', '.', ',', '“', '”','！', '？', '：', '。', ' ']
-f = open('cedict_ts.u8', 'r', encoding = 'utf-8')
-for line in f:
-    m = re.search('\s(\S*)\s\[[^\n]', line)
-    m2 = re.search('\[(.*)\][^/]', line)
-    m3 = re.search('/(.*)/[^\n]', line)
-    if m != None:
-        word = m.group(1)
-        if m2 != None:
-            transcr = m2.group(1)
-            dic_transcr[word] = transcr
-        if m3 != None:
-            translat = m3.group(1)
-            dic_translat[word] = translat
-    else:
-        print('Error: Word is Not found')
-f.close  
-
+            print('Error: Word is Not found')
+    f.close
+    return dic_transcrib, dic_translat
+'''   
+def translating(dic_transcrib, dic_translat):
+    with open('translated.xml', 'w', encoding = 'utf-8') as file:
+        x = 0
+        header = '<html>\n<head>\n</head>\n<body>\n'
+        file.write(header)
+        for sentence in sentences:
+            to_write = '<se>'
+            word = ''
+            for letter in sentence:
+                if x == 1:
+                    init = word
+                    word += letter
+                    if word in dic_translat:
+                        x = 1
+                    else:
+                        transcr = dic_transcrib[init]
+                        translat = dic_translat[init]
+                        x = 0
+                        word = ''
+                        to_write += ('<w><ana lex=\"' + str(init) + '\" transcr=\"'
+                                    + str(transcr) + '\" sem=\"' + str(translat)
+                                    + '\"/>' + str(init) + '</w>\n')
+                if x == 0:
+                    if letter not in dic_translat:
+                        to_write += str(letter)
+                    if letter in dic_translat:
+                        init = letter
+                        word += letter
+                        x = 1
+            to_write += '</se>\n'
+            file.write(to_write)
+            
+        finish = '</body>\n</html>\n'
+        file.write(finish)
+    return
+''' 
+dic_transcrib, dic_translat = dictionary_maker()
+'''
 file = open('stal.xml', 'r', encoding = 'utf-8')
 text = file.read()
-with open('translation.xml', 'w', encoding = 'utf-8') as tran:
-    for letter in text:
-        if state == 'ignor_cancel':
-            state = 'check'
-        if letter == '>':
-            state = 'ignor_cancel'
-        if letter == '<':
-            state = 'Done'
-        if letter in punct:
-            state = 'write'
-            
-        if state == 'check':
-            letters += letter
-            
-        if letter == ' ':
-            state = 'write'
-            
-        if state == 'write':
-            state = 'check'
-            if letter2 in dic_translat:
-                
-              
+file.close()
+tree = lxml.html.fromstring(text)
+sentences = tree.xpath('.//se//text()')
+translating(dic_transcrib, dic_translat)
+
+print('Done')
+
+'''   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+           
+
