@@ -14,27 +14,24 @@ def dictionary_maker():
     f = open('cedict_ts.u8', 'r', encoding = 'utf-8')
     for line in f:
         m = re.search('\s(\S*)\s\[[^\n]', line)
-        m2 = re.search('\[(.*)\][^/]', line)
+        m2 = re.search('\[(.*?)\][^/]', line)
         m3 = re.search('(/.*/)[^\n]', line)
         if m != None:
-            word = m.group(1)
+            word = m.group(1) 
             if m2 != None:
                 transcrib = m2.group(1)
                 dic_transcrib[word] = transcrib
             if m3 != None:
                 translat = m3.group(1)
-                a = re.findall('/?(.+?)/', translat)
-                if len(a) > 1:
-                    dic_translat[word] = a
-                else:
-                    dic_translat[word] = translat
+                translat = re.sub('/', ', ', translat)
+                dic_translat[word] = translat
                     
                 
         else:
             print('Error: Word is Not found')
     f.close
     return dic_transcrib, dic_translat
-   
+  
 def translating(dic_transcrib, dic_translat):
     with open('translated.xml', 'w', encoding = 'utf-8') as file:
         x = 0
@@ -50,13 +47,13 @@ def translating(dic_transcrib, dic_translat):
                     if word in dic_translat:
                         x = 1
                     else:
-                        transcr = dic_transcrib[init]
-                        translat = dic_translat[init]
                         x = 0
                         word = ''
-                        to_write += ('<w><ana lex=\"' + str(init) + '\" transcr=\"'
-                                    + str(transcr) + '\" sem=\"' + str(translat)
-                                    + '\"/>' + str(init) + '</w>\n')
+                        transcr = dic_transcrib[init]
+                        translat = dic_translat[init]
+                        to_write += ('<w><ana lex=\"' + str(init) + '\" transcr=\"' 
+                                        + str(transcr) + '\" sem=\"' + str(translat)
+                                        + '\"/>' + str(init) + '</w>\n')
                 if x == 0:
                     if letter not in dic_translat:
                         to_write += str(letter)
@@ -65,14 +62,15 @@ def translating(dic_transcrib, dic_translat):
                         word += letter
                         x = 1
             to_write += '</se>\n'
+            to_write = re.sub('\", ', '\"', to_write)
+            to_write = re.sub('\, "', '\"', to_write)
             file.write(to_write)
             
         finish = '</body>\n</html>\n'
         file.write(finish)
     return
- 
-dic_transcrib, dic_translat = dictionary_maker()
 
+dic_transcrib, dic_translat = dictionary_maker()
 file = open('stal.xml', 'r', encoding = 'utf-8')
 text = file.read()
 file.close()
