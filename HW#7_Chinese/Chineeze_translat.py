@@ -11,7 +11,7 @@ import lxml.html
 def dictionary_maker():
     dic_translat = {}
     dic_transcrib = {}
-    f = open('cedict_ts_mini.u8', 'r', encoding = 'utf-8')
+    f = open('cedict_ts.u8', 'r', encoding = 'utf-8')
     for line in f:
         m = re.search('\s(\S*)\s\[[^\n]', line)
         m2 = re.search('\[(.*)\][^/]', line)
@@ -34,7 +34,7 @@ def dictionary_maker():
             print('Error: Word is Not found')
     f.close
     return dic_transcrib, dic_translat
-'''   
+   
 def translating(dic_transcrib, dic_translat):
     with open('translated.xml', 'w', encoding = 'utf-8') as file:
         x = 0
@@ -70,9 +70,9 @@ def translating(dic_transcrib, dic_translat):
         finish = '</body>\n</html>\n'
         file.write(finish)
     return
-''' 
+ 
 dic_transcrib, dic_translat = dictionary_maker()
-'''
+
 file = open('stal.xml', 'r', encoding = 'utf-8')
 text = file.read()
 file.close()
@@ -81,8 +81,7 @@ sentences = tree.xpath('.//se//text()')
 translating(dic_transcrib, dic_translat)
 
 print('Done')
-
-'''   
+ 
     
     
     
